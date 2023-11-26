@@ -43,9 +43,9 @@ static void init(int fd, int width, int height, int dpi) {
       ioctl(fd, UI_SET_ABSBIT, ABS_X);
       ioctl(fd, UI_SET_ABSBIT, ABS_Y);
   */
+  char dname[80] = "rem vdev";
 
-  struct uinput_setup device = {.id = {.bustype = BUS_USB},
-                                .name = "Emulated Absolute Positioning Device"};
+  struct uinput_setup device = {.id = {.bustype = BUS_USB}, .name = *dname};
 
   if (-1 == ioctl(fd, UI_DEV_SETUP, &device))
     fatal("ioctl UI_DEV_SETUP");
@@ -60,7 +60,7 @@ static void init(int fd, int width, int height, int dpi) {
   sleep(1);
 }
 
-static void emit(int fd, int type, int code, int value) {
+void emit(int fd, int type, int code, int value) {
   struct input_event ie = {.type = type, .code = code, .value = value};
 
   write(fd, &ie, sizeof ie);

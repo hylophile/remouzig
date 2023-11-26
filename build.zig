@@ -30,7 +30,8 @@ pub fn build(b: *std.Build) void {
     // step when running `zig build`).
     b.installArtifact(exe);
 
-    exe.addIncludePath(.{ .path = "src" });
+    exe.addIncludePath(.{ .path = "/usr/include/libevdev-1.0/" });
+    exe.linkSystemLibrary("libevdev");
 
     // This *creates* a Run step in the build graph, to be executed when another
     // step is evaluated that depends on it. The next line below will establish

@@ -1,4 +1,3 @@
-const std = @import("std");
 pub const __builtin_bswap16 = @import("std").zig.c_builtins.__builtin_bswap16;
 pub const __builtin_bswap32 = @import("std").zig.c_builtins.__builtin_bswap32;
 pub const __builtin_bswap64 = @import("std").zig.c_builtins.__builtin_bswap64;
@@ -1379,9 +1378,7 @@ pub fn init(arg_fd: c_int, arg_width: c_int, arg_height: c_int, arg_dpi: c_int) 
     if (-@as(c_int, 1) == ioctl(fd, @as(c_ulong, @bitCast(@as(c_ulong, ((@as(c_uint, 1) << @intCast(((@as(c_int, 0) + @as(c_int, 8)) + @as(c_int, 8)) + @as(c_int, 14))) | @as(c_uint, @bitCast(@as(c_int, 'U') << @intCast(@as(c_int, 0) + @as(c_int, 8))))) | @as(c_uint, @bitCast(@as(c_int, 100) << @intCast(0)))))) | (@sizeOf(c_int) << @intCast((@as(c_int, 0) + @as(c_int, 8)) + @as(c_int, 8))), @as(c_int, 3))) {
         fatal("ioctl UI_SET_EVBIT EV_ABS");
     }
-    var device_name = [_]u8{0} ** 80;
-    std.mem.copy(u8, &device_name, "remarkable virtual device");
-    // device_name = "remarkable virtual device";
+    var dname: [80]u8 = "rem vdev"[0..8].* ++ [1]u8{0} ** 72;
     var device: struct_uinput_setup = struct_uinput_setup{
         .id = struct_input_id{
             .bustype = @as(__u16, @bitCast(@as(c_short, @truncate(@as(c_int, 3))))),
@@ -1389,7 +1386,9 @@ pub fn init(arg_fd: c_int, arg_width: c_int, arg_height: c_int, arg_dpi: c_int) 
             .product = @import("std").mem.zeroes(__u16),
             .version = @import("std").mem.zeroes(__u16),
         },
-        .name = device_name,
+        .name = [1]u8{
+            @as([*c]u8, @ptrCast(@alignCast(&dname))).*,
+        } ++ [1]u8{0} ** 79,
         .ff_effects_max = @import("std").mem.zeroes(__u32),
     };
     if (-@as(c_int, 1) == ioctl(fd, @as(c_ulong, @bitCast(@as(c_ulong, ((@as(c_uint, 1) << @intCast(((@as(c_int, 0) + @as(c_int, 8)) + @as(c_int, 8)) + @as(c_int, 14))) | @as(c_uint, @bitCast(@as(c_int, 'U') << @intCast(@as(c_int, 0) + @as(c_int, 8))))) | @as(c_uint, @bitCast(@as(c_int, 3) << @intCast(0)))))) | (@sizeOf(struct_uinput_setup) << @intCast((@as(c_int, 0) + @as(c_int, 8)) + @as(c_int, 8))), &device)) {
@@ -1402,7 +1401,7 @@ pub fn init(arg_fd: c_int, arg_width: c_int, arg_height: c_int, arg_dpi: c_int) 
     }
     _ = sleep(@as(c_uint, @bitCast(@as(c_int, 1))));
 }
-pub fn emit(arg_fd: c_int, arg_type: c_int, arg_code: c_int, arg_value: c_int) callconv(.C) void {
+pub export fn emit(arg_fd: c_int, arg_type: c_int, arg_code: c_int, arg_value: c_int) void {
     var fd = arg_fd;
     var @"type" = arg_type;
     var code = arg_code;

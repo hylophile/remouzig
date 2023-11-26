@@ -2,32 +2,38 @@ const std = @import("std");
 // const c = @cImport({
 //     @cInclude("muinput.h");
 // });
-const c = @import("uinput.zig");
+// const c = @import("uinput.zig");
+const evdev = @import("evdev.zig");
 
-const MyStruct = struct {
-    // Define the fields of your struct
-    field1: u32,
-    field2: u32,
-    // Add more fields as needed
-};
+const ns_per_s: u64 = 1000 * 1000 * 1000;
 
 pub fn main() anyerror!void {
     const allocator = std.heap.page_allocator;
     _ = allocator;
 
-    var fd: c_int = c.setup();
-    defer c.destroy(fd);
+    // a();
+    // var fd: c_int = c.setup();
+    // defer c.destroy(fd);
+
     // const path = "/home/n/remarkable/event1";
     // const file = try std.fs.openFileAbsolute(path, .{ .mode = .read_only });
     // defer file.close();
+
+    const dev = evdev.setup();
+    defer evdev.destroy(dev);
+
     const stdin = std.io.getStdIn().reader();
 
     var buffer: [16]u8 = undefined;
     var bytesRead: usize = 16;
     var x: i64 = 0;
+    _ = x;
     var y: i64 = 0;
+    _ = y;
     var x_rel: i64 = 0;
+    _ = x_rel;
     var y_rel: i64 = 0;
+    _ = y_rel;
 
     const max_x = 20966;
     _ = max_x;
@@ -65,54 +71,35 @@ pub fn main() anyerror!void {
         _ = millis;
         const dtype: u16 = std.mem.readIntLittle(u16, buffer[8..10]);
         const code: u16 = std.mem.readIntLittle(u16, buffer[10..12]);
-        const value: u32 = std.mem.readIntLittle(u32, buffer[12..16]);
+        var value: i32 = std.mem.readIntLittle(i32, buffer[12..16]);
+        // std.debug.print("{}\t{}\t{}\t{}\t{}\n", .{ time, millis, dtype, code, value });
 
         if (dtype == 3) {
-            const n_val: i64 = @divTrunc(@as(i64, @intCast(value)), 10);
+            // const n_val: i64 = @divTrunc(@as(i64, @intCast(value)), 10);
+            // const n_val = value / 10;
             if (code == 0) {
-                if (x != 0)
-                    x_rel = n_val - x;
-                x = n_val;
-                // std.debug.print("{}\n", .{x});
+                // std.debug.print("x: {}\n", .{value});
+                // value = @divTrunc(value, 20);
+                value = value;
+                // if (x != 0)
+                //     x_rel = n_val - x;
+                // x = n_val;
+                // // std.debug.print("{}\n", .{x});
+                // value = x;
             }
             if (code == 1) {
-                if (y != 0)
-                    y_rel = n_val - y;
-                y = n_val;
+                // std.debug.print("y: {}\n", .{value});
+                // value = @divTrunc(value, 20);
+                value = value;
+                // value = value / 10;
+                // if (y != 0)
+                //     y_rel = n_val - y;
+                // y = n_val;
+                // value = y;
             }
         }
 
-        if (dtype == 0 and code == 0) {
-            // if (x != 0 and y != 0)
-            c.set_xy(fd, @as(c_int, @intCast(x)), @as(c_int, @intCast(y)));
-            // std.debug.print("x: {}, y: {}\n", .{ x / 10, y / 10 });
-            // const x_s = try std.fmt.allocPrint(allocator, "{d}", .{x_rel});
-            // const y_s = try std.fmt.allocPrint(allocator, "{d}", .{y_rel});
-            // // std.debug.print("{}{}\n", .{ x, y });
-            // var proc = std.ChildProcess.init(&[_][]const u8{ "sudo", "ydotool", "mousemove", "-x", x_s, "-y", y_s }, std.heap.page_allocator);
-            // try proc.spawn();
-        }
-
-        // if (!pressed and dtype == 3 and code == 24) {
-        //     pressed = true;
-        //     const result = try std.ChildProcess.exec(.{ .allocator = std.heap.page_allocator, .argv = &[_][]const u8{ "sudo", "ydotool", "click", "0x40" } });
-        //     _ = result;
-        // }
-        // if (pressed and dtype == 3 and code == 25) {
-        //     pressed = false;
-        //     const result = try std.ChildProcess.exec(.{ .allocator = std.heap.page_allocator, .argv = &[_][]const u8{ "sudo", "ydotool", "click", "0x80" } });
-        //     _ = result;
-        // }
-        // Parse the bytes into the struct fields
-        // const field1Bytes: = try std.fmt.parseInt(u8, buffer[0..4], 10);
-        // std.mem.be
-        // Parse more fields if needed
-
-        // myStruct.field1 = std.mem.le<u32>(field1Bytes);
-        // myStruct.field2 = std.mem.le<u32>(field2Bytes);
-        // Assign more fields as needed
-
-        // Print the parsed struct in every step
-        // std.debug.print("{}\t{}\t{}\t{}\t{}\n", .{ time, millis, dtype, code, value });
+        // c.emit(fd, @as(c_int, @intCast(dtype)), @as(c_int, @intCast(code)), @as(c_int, @intCast(value)));
+        evdev.write(dev, dtype, code, value);
     }
 }

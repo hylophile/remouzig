@@ -7,6 +7,29 @@ const evdev = @import("evdev.zig");
 
 const ns_per_s: u64 = 1000 * 1000 * 1000;
 
+const Point = struct { x: i32, y: i32 };
+
+fn map_to_monitor(in_x: i32, in_y: i32) Point {
+    const w_screen: f32 = 1920.0 + 2560.0;
+    _ = w_screen;
+    const h_screen: i32 = 1440.0;
+    _ = h_screen;
+    const w_rem = 20966.0;
+    _ = w_rem;
+    const h_rem = 15725.0;
+    _ = h_rem;
+
+    const origin_x = 20966.0 * (1920.0 / (1920.0 + 2560.0));
+    const origin_y = 0.0;
+
+    const p_x: i32 = @intFromFloat(@floor(origin_x) + @floor(@as(f32, @floatFromInt(in_x)) * 2560.0 / (1920.0 + 2560.0)));
+    // const p_x: i32 = @intFromFloat(@floor(origin_x) + @floor(@as(f32, @floatFromInt(in_x)) * (w_screen / w_rem)));
+    const p_y: i32 = @intFromFloat(@floor(origin_y) + @floor(@as(f32, @floatFromInt(in_y)) * 20966.0 / 15725.0));
+    // const p_y = origin_y + @as();
+
+    return .{ .x = p_x, .y = p_y };
+}
+
 pub fn main() anyerror!void {
     const allocator = std.heap.page_allocator;
     _ = allocator;
@@ -34,11 +57,6 @@ pub fn main() anyerror!void {
     _ = x_rel;
     var y_rel: i64 = 0;
     _ = y_rel;
-
-    const max_x = 20966;
-    _ = max_x;
-    const max_y = 15725;
-    _ = max_y;
 
     const every = 10;
     _ = every;
@@ -80,7 +98,7 @@ pub fn main() anyerror!void {
             if (code == 0) {
                 // std.debug.print("x: {}\n", .{value});
                 // value = @divTrunc(value, 20);
-                value = value;
+                value = map_to_monitor(value, 0).x;
                 // if (x != 0)
                 //     x_rel = n_val - x;
                 // x = n_val;
@@ -91,6 +109,7 @@ pub fn main() anyerror!void {
                 // std.debug.print("y: {}\n", .{value});
                 // value = @divTrunc(value, 20);
                 value = value;
+                value = map_to_monitor(value, value).y;
                 // value = value / 10;
                 // if (y != 0)
                 //     y_rel = n_val - y;

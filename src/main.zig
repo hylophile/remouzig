@@ -22,9 +22,9 @@ fn map_to_monitor(in_x: i32, in_y: i32) Point {
     const origin_x = 20966.0 * (1920.0 / (1920.0 + 2560.0));
     const origin_y = 0.0;
 
-    const p_x: i32 = @intFromFloat(@floor(origin_x) + @floor(@as(f32, @floatFromInt(in_x)) * 2560.0 / (1920.0 + 2560.0)));
+    const p_x: i32 = @intFromFloat(origin_x + @as(f32, @floatFromInt(in_x)) * 2560.0 / (1920.0 + 2560.0));
     // const p_x: i32 = @intFromFloat(@floor(origin_x) + @floor(@as(f32, @floatFromInt(in_x)) * (w_screen / w_rem)));
-    const p_y: i32 = @intFromFloat(@floor(origin_y) + @floor(@as(f32, @floatFromInt(in_y)) * 20966.0 / 15725.0));
+    const p_y: i32 = @intFromFloat((origin_y + @as(f32, @floatFromInt(in_y)) * 20966.0 / 15725.0) - (20966.0 - 15725.0) * 0.5);
     // const p_y = origin_y + @as();
 
     return .{ .x = p_x, .y = p_y };

@@ -88,7 +88,7 @@ pub fn main() anyerror!void {
         const millis: u32 = std.mem.readIntLittle(u32, buffer[4..8]);
         _ = millis;
         const dtype: u16 = std.mem.readIntLittle(u16, buffer[8..10]);
-        const code: u16 = std.mem.readIntLittle(u16, buffer[10..12]);
+        var code: u16 = std.mem.readIntLittle(u16, buffer[10..12]);
         var value: i32 = std.mem.readIntLittle(i32, buffer[12..16]);
         // std.debug.print("{}\t{}\t{}\t{}\t{}\n", .{ time, millis, dtype, code, value });
 
@@ -104,8 +104,7 @@ pub fn main() anyerror!void {
                 // x = n_val;
                 // // std.debug.print("{}\n", .{x});
                 // value = x;
-            }
-            if (code == 1) {
+            } else if (code == 1) {
                 // std.debug.print("y: {}\n", .{value});
                 // value = @divTrunc(value, 20);
                 value = value;
@@ -115,6 +114,12 @@ pub fn main() anyerror!void {
                 //     y_rel = n_val - y;
                 // y = n_val;
                 // value = y;
+            } else if (code == 26) {
+                code = 27;
+                value = -1 * value;
+            } else if (code == 27) {
+                code = 26;
+                // value = -1 * value;
             }
         }
 

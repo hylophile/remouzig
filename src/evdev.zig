@@ -61,8 +61,10 @@ pub fn setup() ?*l.libevdev_uinput {
     //     touch inputs
     _ = l.libevdev_enable_event_type(dev, l.EV_ABS);
     // setup_abs(dev, l.ABS_MT_POSITION_X, 0, 20966, 100);
-    setup_abs(dev, l.ABS_MT_POSITION_X, 0, 1400, 10);
-    setup_abs(dev, l.ABS_MT_POSITION_Y, 0, 1900, 10);
+    // setup_abs(dev, l.ABS_MT_POSITION_X, 0, 1403, 10);
+    // setup_abs(dev, l.ABS_MT_POSITION_Y, 0, 1871, 10);
+    setup_abs(dev, l.ABS_MT_POSITION_X, 0, 1871, 10);
+    setup_abs(dev, l.ABS_MT_POSITION_Y, 0, 1403, 10);
     setup_abs(dev, l.ABS_MT_PRESSURE, 0, 256, null);
     setup_abs(dev, l.ABS_MT_TOUCH_MAJOR, 0, 255, null);
     setup_abs(dev, l.ABS_MT_TOUCH_MINOR, 0, 255, null);

@@ -86,11 +86,13 @@ pub fn main() anyerror!void {
         // _ = myStruct; u4 u4 u2 u2 i4
         // e_time, e_millis, e_type, e_code, e_value = struct.unpack('2IHHi', data)
         const time: u32 = std.mem.readIntLittle(u32, buffer[0..4]);
+        _ = time;
         const millis: u32 = std.mem.readIntLittle(u32, buffer[4..8]);
+        _ = millis;
         const dtype: u16 = std.mem.readIntLittle(u16, buffer[8..10]);
         var code: u16 = std.mem.readIntLittle(u16, buffer[10..12]);
         var value: i32 = std.mem.readIntLittle(i32, buffer[12..16]);
-        std.debug.print("{}\t{}\t{}\t{}\t{}\n", .{ time, millis, dtype, code, value });
+        // std.debug.print("{}\t{}\t{}\t{}\t{}\n", .{ time, millis, dtype, code, value });
         // continue;
 
         if (dtype == 3) {
@@ -121,6 +123,11 @@ pub fn main() anyerror!void {
             } else if (code == 27) {
                 code = 26;
                 // value = -1 * value;
+            } else if (code == 53) {
+                code = 54;
+                // }
+            } else if (code == 54) {
+                code = 53;
             }
         }
 

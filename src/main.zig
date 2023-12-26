@@ -69,9 +69,9 @@ pub fn main() anyerror!void {
         // _ = time;
         // const millis: u32 = std.mem.readIntLittle(u32, buffer[4..8]);
         // _ = millis;
-        const dtype: u16 = std.mem.readIntLittle(u16, buffer[8..10]);
-        var code: u16 = std.mem.readIntLittle(u16, buffer[10..12]);
-        var value: i32 = std.mem.readIntLittle(i32, buffer[12..16]);
+        const dtype: u16 = std.mem.readInt(u16, buffer[8..10], std.builtin.Endian.little);
+        var code: u16 = std.mem.readInt(u16, buffer[10..12], std.builtin.Endian.little);
+        var value: i32 = std.mem.readInt(i32, buffer[12..16], std.builtin.Endian.little);
         // std.debug.print("{}\t{}\t{}\t{}\t{}\n", .{ time, millis, dtype, code, value });
 
         if (dtype == l.EV_ABS) {

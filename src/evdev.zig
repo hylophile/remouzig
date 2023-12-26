@@ -11,7 +11,7 @@ fn setup_abs(dev: ?*l.struct_libevdev, code: c_uint, min: c_int, max: c_int, res
 }
 
 pub fn setup_pen() ?*l.libevdev_uinput {
-    var dev = l.libevdev_new();
+    const dev = l.libevdev_new();
 
     l.libevdev_set_name(dev, "remarkable_pen");
     // l.libevdev_set_id_bustype(dev, 0x03);
@@ -55,7 +55,7 @@ pub fn setup_pen() ?*l.libevdev_uinput {
 }
 
 pub fn setup_touchpad() ?*l.libevdev_uinput {
-    var dev = l.libevdev_new();
+    const dev = l.libevdev_new();
 
     l.libevdev_set_name(dev, "remarkable_touchpad");
     _ = l.libevdev_enable_property(dev, l.INPUT_PROP_POINTER);

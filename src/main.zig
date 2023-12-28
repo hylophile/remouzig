@@ -62,16 +62,14 @@ pub fn main() anyerror!void {
 
         if (bytesRead != 16 and bytesRead != 0) {
             std.debug.print("Unexpected read size: {}\n", .{bytesRead});
-            break;
+            continue;
         }
 
-        // const time: u32 = std.mem.readIntLittle(u32, buffer[0..4]);
-        // _ = time;
-        // const millis: u32 = std.mem.readIntLittle(u32, buffer[4..8]);
-        // _ = millis;
         const dtype: u16 = std.mem.readInt(u16, buffer[8..10], std.builtin.Endian.little);
         var code: u16 = std.mem.readInt(u16, buffer[10..12], std.builtin.Endian.little);
         var value: i32 = std.mem.readInt(i32, buffer[12..16], std.builtin.Endian.little);
+        // const time: u32 = std.mem.readInt(u32, buffer[0..4], std.builtin.Endian.little);
+        // const millis: u32 = std.mem.readInt(u32, buffer[4..8], std.builtin.Endian.little);
         // std.debug.print("{}\t{}\t{}\t{}\t{}\n", .{ time, millis, dtype, code, value });
 
         if (dtype == l.EV_ABS) {
@@ -80,7 +78,7 @@ pub fn main() anyerror!void {
                     value = map_x_to_monitor(value);
                 },
                 l.ABS_Y => {
-                    value = map_x_to_monitor(value);
+                    value = map_y_to_monitor(value);
                 },
                 l.ABS_TILT_X => {
                     code = l.ABS_TILT_Y;
